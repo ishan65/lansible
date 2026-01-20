@@ -1,0 +1,7 @@
+localhost
+[rhel9]
+localhost
+[rhel:children]
+rhel9
+[linux:children]
+[rhel]

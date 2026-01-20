@@ -1,0 +1,71 @@
+---
+- name: Create Projects
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Fail if project name not supplied
+      ansible.builtin.fail:
+        msg: The project_root must be specified with the option -e
+      when: project_root is not defined
+
+    - name: Create the directory using project_root variable
+      ansible.builtin.file:
+        path: "{{ project_root }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create the standard project directories
+      ansible.builtin.file:
+        path: "{{ project_root }}/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - inventory
+        - inventory/host_vars
+        - inventory/group_vars
+        - playbooks
+        - roles
+        - plugins/modules
+        - plugins/filters
+
+    - name: Create Project Ansible Configuration
+      ansible.builtin.copy:
+        dest: "{{ project_root }}/ansible.cfg"
+        content: |
+          [defaults]
+          inventory = ./inventory/hosts
+          remote_user = im65
+          host_key_checking = False
+
+    - name: Create Project Inventory Entry Localhost
+      ansible.builtin.copy:
+        dest: "{{ project_root }}/inventory/hosts"
+        content: |
+          localhost
+          [rhel9]
+          localhost
+          [rhel:children]
+          rhel9
+          [linux:children]
+          [rhel]
+
+    - name: Create Project Inventory Entry Localhost
+      ansible.builtin.copy:
+        dest: "{{ project_root }}/inventory/hosts"
+        content: |
+          localhost
+          [rhel9]
+          localhost
+          [rhel:children]
+          rhel9
+          [linux:children]
+          [rhel]
+
+    - name: Create Project Localhost Variables
+      ansible.builtin.copy:
+        dest: "{{ project_root }}/inventory/host_vars/localhost.yaml"
+        content: |
+          ansible_connection: local
+          ansible_python_interpreter: /root/scripting/lansible/venv/bin/python3
