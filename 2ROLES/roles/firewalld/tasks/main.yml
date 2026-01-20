@@ -1,0 +1,12 @@
+---
+# tasks file for firewalld
+- name: Ensure the firewalld is installed
+  ansible.builtin.package:
+    name: firewalld
+
+- name: Ensure the firewall is running via firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+

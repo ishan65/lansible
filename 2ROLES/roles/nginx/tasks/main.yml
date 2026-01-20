@@ -11,12 +11,6 @@
     state: started
     enabled: true
 
-- name: Ensure the firewall is running via firewalld
-  ansible.builtin.service:
-    name: firewalld
-    state: started
-    enabled: true
-
 - name: allow HTTP traffic via firewalld
   ansible.posix.firewalld:
     service: http
