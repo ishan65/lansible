@@ -1,0 +1,7 @@
+---
+- name: Ensure Baisc roles 
+  hosts: localhost
+  become: true
+  gather_facts: false
+  roles:
+    - base
