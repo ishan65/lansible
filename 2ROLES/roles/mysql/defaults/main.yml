@@ -1,0 +1,5 @@
+---
+# defaults file for mysql
+mysql_root_password: Password1
+mysql_socket: /var/run/mysqld/mysqld.sock
+

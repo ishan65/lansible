@@ -1,0 +1,94 @@
+---
+# tasks file for mysql
+- name: Install MySQL packages and Python dependency
+  ansible.builtin.package:
+    name:
+      - mysql-server
+      - mysql-client
+      - python3-pymysql
+    state: present
+
+- name: Create custom my.cnf for initial setup
+  copy:
+    dest: /etc/mysql/mysql.conf.d/custom.cnf
+    content: |
+      [mysqld]
+      default_authentication_plugin=mysql_native_password
+    mode: '0644'
+
+- name: Start and enable MySQL service
+  systemd:
+    name: mysql
+    state: started
+    enabled: true
+
+# Check if we can already connect with the password
+- name: Try socket login as root (no password)
+  community.mysql.mysql_info:
+    login_unix_socket: "{{ mysql_socket }}"
+  register: root_socket_check
+  changed_when: false
+  ignore_errors: true
+
+# If socket login works, set password and plugin using socket auth
+- name: Set MySQL root password via socket (first-time setup)
+  community.mysql.mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mysql_root_password }}"
+    plugin: mysql_native_password
+    state: present
+    login_unix_socket: "{{ mysql_socket }}"
+  when: root_socket_check is succeeded
+
+# If socket login failed, check if password already works
+- name: Check if MySQL root password is already set
+  community.mysql.mysql_info:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  register: password_check
+  changed_when: false
+  ignore_errors: true
+  when: root_socket_check is failed
+
+# If neither socket auth nor password worked, try setting password via socket anyway
+# (covers cases where plugin is native but password not set yet and socket is still accessible)
+- name: Set MySQL root password (fallback)
+  community.mysql.mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mysql_root_password }}"
+    plugin: mysql_native_password
+    state: present
+    login_unix_socket: "{{ mysql_socket }}"
+  when:
+    - root_socket_check is failed
+    - password_check is failed
+
+- name: Verify MySQL root password works
+  community.mysql.mysql_info:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  register: verify_connection
+  changed_when: false
+  ignore_errors: true
+
+- name: Report success
+  debug:
+    msg: "MySQL root password has been set successfully"
+  when: verify_connection is success or password_check is success
+
+- name: Report failure
+  fail:
+    msg: "Failed to set MySQL root password. Check MySQL logs for details."
+  when: verify_connection is failed and password_check is failed
+
+- name: Open MySQL Port for firewalld
+  ansible.posix.firewalld:
+    service: mysql
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true

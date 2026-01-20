@@ -1,0 +1,8 @@
+- name: Install mySQL on RHEL 
+  hosts: localhost
+  become: true
+  gather_facts: false
+  vars:
+    mysql_root_password: PasswordPassword1
+  roles:
+    - mysql
