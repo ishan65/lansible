@@ -1,0 +1,11 @@
+---
+# deploy_custom_script.yml
+
+- name: Deploy custom script
+  hosts: localhost
+  become: false
+
+  tasks:
+    # Non-idempotent approach - will run every time
+    - name: BAD EXAMPLE - Run custom script without checks
+      script: "script.sh"
