@@ -4,6 +4,7 @@
 - name: Deploy custom script
   hosts: localhost
   become: false
+  gather_facts: false
   vars:
     marker_file: "/tmp/script_success"
   tasks:
