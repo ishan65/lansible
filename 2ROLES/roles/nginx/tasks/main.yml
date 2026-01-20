@@ -1,0 +1,33 @@
+---
+# The posix collection needs to be added
+# ansible-galaxy collection install ansible.posix
+- name: Install Nginx Web Server
+  ansible.builtin.package:
+    name: nginx
+
+- name: Start and Enable Service
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Ensure the firewall is running via firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: allow HTTP traffic via firewalld
+  ansible.posix.firewalld:
+    service: http
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+
+- name: Copy directory recursively to target node
+  ansible.builtin.copy:
+    src: html/
+    dest: /usr/share/nginx/html/
+    mode: 0644
+    directory_mode: 0755
