@@ -1,0 +1,27 @@
+---
+# deploy_custom_script.yml
+
+- name: Deploy custom script
+  hosts: localhost
+  become: false
+  vars:
+    marker_file: "/tmp/script_success"
+  tasks:
+    # Idempotent approach - uses marker file to track execution
+    - name: Check if script has been run before
+      stat:
+        path: "{{ marker_file }}"
+      register: marker
+
+    - name: Script execution control
+      block:
+      - name: Run custom script only if not run before
+        script: "script.sh"
+      - name: Create marker file to indicate script has been run
+        file:
+          path: "{{ marker_file }}"
+          state: touch
+          mode: '0644'
+      when: not marker.stat.exists
+
+
