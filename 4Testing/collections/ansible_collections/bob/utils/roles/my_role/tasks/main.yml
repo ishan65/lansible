@@ -1,0 +1,5 @@
+---
+# tasks file for my_role
+- name: A test tasks
+  ansible.builtin.debug:
+    msg: "This is testing molecule of this role"

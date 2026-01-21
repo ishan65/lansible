@@ -1,0 +1,22 @@
+---
+- name: Install Web Server Across Distributions
+  hosts: localhost
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Display OS
+      ansible.builtin.debug:
+        msg: "The OS is: {{ ansible_facts['os_family'] }}"
+      become: false
+
+    - name: Install package with yum
+      ansible.builtin.yum:
+        name: httpd
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Install package with apt
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
