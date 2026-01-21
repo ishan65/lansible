@@ -1,0 +1,30 @@
+{
+ "collection_info": {
+  "namespace": "theurbanpenguin",
+  "name": "utils",
+  "version": "0.0.2",
+  "authors": [
+   "The Urban Penguin <@theurbanpenguin>"
+  ],
+  "readme": "README.md",
+  "tags": [],
+  "description": "Simple Linux Utilities",
+  "license": [
+   "GPL-2.0-or-later"
+  ],
+  "license_file": null,
+  "dependencies": {},
+  "repository": "https://github.com/theurbanpenguin/utils",
+  "documentation": null,
+  "homepage": null,
+  "issues": null
+ },
+ "file_manifest_file": {
+  "name": "FILES.json",
+  "ftype": "file",
+  "chksum_type": "sha256",
+  "chksum_sha256": "c8404c2311ea26cdc4fcfe2caa0cc8a8a1463856ceb5770496bd27aeb25d7425",
+  "format": 1
+ },
+ "format": 1
+}
